@@ -6,12 +6,12 @@ import plotly.express as px
 st.set_page_config(page_title="Dashboard de Ventas", layout="wide")
 st.title("📊 Análisis de Ventas 2019 - 2026")
 
-# 2. Cargar los datos (El archivo que subiste)
+# 2. Cargar los datos
 @st.cache_data
 def load_data():
-   df = pd.read_csv('Book1.xlsx - Sheet1 (1).csv')
+    # Asegúrate de que este nombre sea EXACTO al de tu archivo en GitHub
+    df = pd.read_csv('Book1.xlsx - Sheet1 (1).csv')
     df['Sum(PXC_GTV)'] = df['Sum(PXC_GTV)'].fillna(0)
-    # Ordenar meses cronológicamente
     month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 
                  'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
     df['month_num'] = df['BK_MONTH'].map(month_map)
@@ -25,8 +25,7 @@ years = sorted(df['BK_YEAR'].unique())
 selected_years = st.sidebar.multiselect("Selecciona los Años", years, default=years[-2:])
 
 # Filtrar datos
-mask = df['BK_YEAR'].isin(selected_years)
-df_filtered = df[mask]
+df_filtered = df[df['BK_YEAR'].isin(selected_years)]
 
 # 4. KPIs Principales
 col1, col2, col3 = st.columns(3)
@@ -48,11 +47,10 @@ fig_trend = px.line(monthly_trend, x='BK_MONTH', y='Sum(PXC_GTV)', color='BK_YEA
                   markers=True, template="plotly_white")
 st.plotly_chart(fig_trend, use_container_width=True)
 
-# 6. Gráfico de Subcategorías (Pareto)
+# 6. Gráfico de Subcategorías
 st.subheader("🏆 Top Subcategorías por Ventas")
 subcat_sales = df_filtered.groupby('BK_SUBCATEGORY')['Sum(PXC_GTV)'].sum().sort_values(ascending=False).head(10).reset_index()
 
 fig_bar = px.bar(subcat_sales, x='Sum(PXC_GTV)', y='BK_SUBCATEGORY', orientation='h',
-                 color='Sum(PXC_GTV)', color_continuous_scale='Viridis',
-                 labels={'Sum(PXC_GTV)': 'Ventas', 'BK_SUBCATEGORY': 'Categoría'})
+                 color='Sum(PXC_GTV)', color_continuous_scale='Viridis')
 st.plotly_chart(fig_bar, use_container_width=True)
