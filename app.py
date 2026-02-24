@@ -10,11 +10,21 @@ st.title("📊 Mi Dashboard de Ventas")
 uploaded_file = st.file_uploader("Sube tu archivo Excel o CSV para empezar", type=['csv', 'xlsx'])
 
 if uploaded_file is not None:
-    # Cargar datos dependiendo de la extensión
-    if uploaded_file.name.endswith('.csv'):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
+    # Intento de carga robusto para CSV y Excel
+    try:
+        if uploaded_file.name.endswith('.csv'):
+            try:
+                # Intento estándar
+                df = pd.read_csv(uploaded_file)
+            except UnicodeDecodeError:
+                # Intento si el archivo tiene caracteres especiales (acentos, ñ)
+                uploaded_file.seek(0)
+                df = pd.read_csv(uploaded_file, encoding='latin1')
+        else:
+            df = pd.read_excel(uploaded_file)
+    except Exception as e:
+        st.error(f"Error al leer el archivo: {e}")
+        st.stop()
 
     # Limpieza básica
     df['Sum(PXC_GTV)'] = df['Sum(PXC_GTV)'].fillna(0)
