@@ -9,7 +9,7 @@ st.title("📊 Análisis de Ventas 2019 - 2026")
 # 2. Cargar los datos (El archivo que subiste)
 @st.cache_data
 def load_data():
-    df = pd.read_csv('Book1.xlsx - Sheet1.csv')
+   df = pd.read_csv('Book1.xlsx - Sheet1 (1).csv')
     df['Sum(PXC_GTV)'] = df['Sum(PXC_GTV)'].fillna(0)
     # Ordenar meses cronológicamente
     month_map = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6, 
