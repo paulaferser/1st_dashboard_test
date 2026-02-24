@@ -10,20 +10,21 @@ st.title("📊 Mi Dashboard de Ventas")
 uploaded_file = st.file_uploader("Sube tu archivo Excel o CSV para empezar", type=['csv', 'xlsx'])
 
 if uploaded_file is not None:
-    # Intento de carga robusto para CSV y Excel
     try:
         if uploaded_file.name.endswith('.csv'):
             try:
-                # Intento estándar
-                df = pd.read_csv(uploaded_file)
+                # El 'sep=None' detecta automáticamente si es coma, punto y coma o tabulador
+                df = pd.read_csv(uploaded_file, sep=None, engine='python', encoding='utf-8')
             except UnicodeDecodeError:
-                # Intento si el archivo tiene caracteres especiales (acentos, ñ)
                 uploaded_file.seek(0)
-                df = pd.read_csv(uploaded_file, encoding='latin1')
+                df = pd.read_csv(uploaded_file, sep=None, engine='python', encoding='latin1')
         else:
+            # Si es Excel directo (.xlsx)
             df = pd.read_excel(uploaded_file)
+            
     except Exception as e:
-        st.error(f"Error al leer el archivo: {e}")
+        st.error(f"Error técnico al abrir el archivo: {e}")
+        st.info("Prueba a guardar tu Excel como 'Libro de Excel (.xlsx)' y súbelo de nuevo.")
         st.stop()
 
     # Limpieza básica
